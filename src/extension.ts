@@ -109,18 +109,17 @@ export const activate = async(context: vscode.ExtensionContext) => {
 
     try {
       const res = await fetchData(MONGO_API_ENDPOINT, dataType, bodyData)
-      console.log(res);
+      //console.log(res);
     } catch (e: any) {
       vscode.window.showInformationMessage(e.message);
     }
 
-    /*
     try {
-      fetchData(MIMAMORI_CODER_API_ENDPOINT, bodyData, isMongo=false)
+      const res = await fetchData(MIMAMORI_CODER_API_ENDPOINT, dataType, bodyData, false)
+      //console.log(res);
     } catch (e: any) {
       vscode.window.showInformationMessage(e.message);
     }
-    */
   });
 
   //Command for changing student ID
