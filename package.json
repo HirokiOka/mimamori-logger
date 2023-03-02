@@ -1,7 +1,9 @@
 {
   "name": "mimamori-logger",
   "displayName": "mimamori-logger",
+  "publisher": "HirokiOka",
   "description": "A logger extension for programming classes.",
+  "repository": "https://github.com/HirokiOka/mimamori-logger",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.75.0"
