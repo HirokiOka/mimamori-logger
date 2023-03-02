@@ -13,12 +13,14 @@ const CLASS_CODE: string = process.env.CLASS_CODE || '';
 const MIMAMORI_CODER_API_ENDPOINT: string = process.env.MIMAMORI_CODER_API_ENDPOINT || '';
 
 
-const fetchData = async(endpoint: string, dataType: string, bodyData: any, isMongo=true) => {
+const fetchData = async(endpoint: string, dataType: string, bodyData: any, isMongo: boolean) => {
   let option = {};
+
+  let bodyCopy = JSON.parse(JSON.stringify(bodyData));
   if (isMongo) {
-    bodyData['collection'] = dataType;
-    bodyData['database'] = MONGO_DB_NAME;
-    bodyData['dataSource'] = MONGO_DATA_SRC;
+    bodyCopy['collection'] = dataType;
+    bodyCopy['database'] = MONGO_DB_NAME;
+    bodyCopy['dataSource'] = MONGO_DATA_SRC;
     option = {
       method: 'POST',
       headers: {
@@ -26,20 +28,19 @@ const fetchData = async(endpoint: string, dataType: string, bodyData: any, isMon
           'Access-Control-Request-Headers': '*',
           'api-key': MONGO_API_KEY
       },
-      body: JSON.stringify(bodyData),
+      body: JSON.stringify(bodyCopy),
     };
   } else {
-    bodyData['classCode'] = CLASS_CODE;
+    bodyCopy['classCode'] = CLASS_CODE;
     option = {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
           'Access-Control-Request-Headers': '*'
       },
-      body: JSON.stringify(bodyData)
+      body: JSON.stringify(bodyCopy)
     };
   }
-  console.log(option);
   const res = await fetch(endpoint, option);
   const resJson = await res.json();
   return resJson;
@@ -108,14 +109,14 @@ export const activate = async(context: vscode.ExtensionContext) => {
     }
 
     try {
-      const res = await fetchData(MONGO_API_ENDPOINT, dataType, bodyData)
+      const res = await fetchData(MONGO_API_ENDPOINT, dataType, bodyData, true);
       //console.log(res);
     } catch (e: any) {
       vscode.window.showInformationMessage(e.message);
     }
 
     try {
-      const res = await fetchData(MIMAMORI_CODER_API_ENDPOINT, dataType, bodyData, false)
+      const res = await fetchData(MIMAMORI_CODER_API_ENDPOINT, dataType, bodyData, false);
       //console.log(res);
     } catch (e: any) {
       vscode.window.showInformationMessage(e.message);
