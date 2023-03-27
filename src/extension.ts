@@ -9,11 +9,11 @@ const MONGO_DB_NAME: string = process.env.DBNAME || '';
 const MONGO_DATA_SRC: string = process.env.DATA_SRC || '';
 const MONGO_API_ENDPOINT: string = process.env.MONGO_API_ENDPOINT || '';
 
-const CLASS_CODE: string = process.env.CLASS_CODE || '';
+//const CLASS_CODE: string = process.env.CLASS_CODE || '';
 const MIMAMORI_CODER_API_ENDPOINT: string = process.env.MIMAMORI_CODER_API_ENDPOINT || '';
 
 
-const fetchData = async(endpoint: string, dataType: string, bodyData: any, isMongo: boolean) => {
+const fetchData = async(endpoint: string, dataType: string, bodyData: any, classCode: any, isMongo: boolean) => {
   let option = {};
 
   let bodyCopy = JSON.parse(JSON.stringify(bodyData));
@@ -31,7 +31,7 @@ const fetchData = async(endpoint: string, dataType: string, bodyData: any, isMon
       body: JSON.stringify(bodyCopy),
     };
   } else {
-    bodyCopy['classCode'] = CLASS_CODE;
+    bodyCopy['classCode'] = classCode;
     option = {
       method: 'POST',
       headers: {
@@ -49,12 +49,23 @@ const fetchData = async(endpoint: string, dataType: string, bodyData: any, isMon
 export const activate = async(context: vscode.ExtensionContext) => {
   vscode.window.showInformationMessage('Mimamori-logger is activated.');
   let studentId: any = context.workspaceState.get('studentId');
+  let classCode: any = context.workspaceState.get('classCode');
+
+
   if (studentId === undefined) {
     studentId = await vscode.window.showInputBox();
     context.workspaceState.update('studentId', studentId);
-    vscode.window.showInformationMessage(`Student ID ${studentId} is registered.`);
-  } else {
-    vscode.window.showInformationMessage(`Your student ID: ${studentId}`);
+  }
+
+  if (classCode === undefined) {
+    classCode = await vscode.window.showInputBox();
+    context.workspaceState.update('classCode', classCode);
+  }
+
+  if (studentId && classCode) {
+    studentId = context.workspaceState.get('studentId');
+    classCode = context.workspaceState.get('classCode');
+    vscode.window.showInformationMessage(`studentID: [${studentId}], classCode: [${classCode}]`);
   }
 
   //Post data when the source code is saved
@@ -108,29 +119,41 @@ export const activate = async(context: vscode.ExtensionContext) => {
       };
     }
 
+    //Post data to MongoDB
     try {
-      const res = await fetchData(MONGO_API_ENDPOINT, dataType, bodyData, true);
-      //console.log(res);
+      const res = await fetchData(MONGO_API_ENDPOINT, dataType, bodyData, classCode, true);
     } catch (e: any) {
       vscode.window.showInformationMessage(e.message);
     }
 
+    //Post data to Mimamori
     try {
-      const res = await fetchData(MIMAMORI_CODER_API_ENDPOINT, dataType, bodyData, false);
-      //console.log(res);
+      //const res = await fetchData(MIMAMORI_CODER_API_ENDPOINT, dataType, bodyData, classCode, false);
     } catch (e: any) {
       vscode.window.showInformationMessage(e.message);
     }
   });
 
   //Command for changing student ID
-	const disposable = vscode.commands.registerCommand('mimamori-logger.change', async () => {
+	const disposableChangeId = vscode.commands.registerCommand('mimamori-logger.changeId', async () => {
     const newId: any = await vscode.window.showInputBox();
     context.workspaceState.update('studentId', newId);
-    vscode.window.showInformationMessage(`Your ID :${newId}`);
+    studentId = context.workspaceState.get('studentId');
+    classCode = context.workspaceState.get('classCode');
+    vscode.window.showInformationMessage(`studentID: [${studentId}], classCode: [${classCode}]`);
 	});
 
-	context.subscriptions.push(disposable);
+	const disposableChangeClassCode = vscode.commands.registerCommand('mimamori-logger.changeClassCode', async () => {
+    const newClassCode: any = await vscode.window.showInputBox();
+    context.workspaceState.update('classCode', newClassCode);
+    studentId = context.workspaceState.get('studentId');
+    classCode = context.workspaceState.get('classCode');
+    vscode.window.showInformationMessage(`studentID: [${studentId}], classCode: [${classCode}]`);
+	});
+
+
+	context.subscriptions.push(disposableChangeId);
+	context.subscriptions.push(disposableChangeClassCode);
 }
 
 export function deactivate() {};

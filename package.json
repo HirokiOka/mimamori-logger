@@ -18,8 +18,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "mimamori-logger.change",
+        "command": "mimamori-logger.changeId",
         "title": "changeId"
+      },
+      {
+        "command": "mimamori-logger.changeClassCode",
+        "title": "changeClassCode"
       }
     ]
   },
