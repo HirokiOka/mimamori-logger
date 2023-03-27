@@ -128,7 +128,7 @@ export const activate = async(context: vscode.ExtensionContext) => {
 
     //Post data to Mimamori
     try {
-      //const res = await fetchData(MIMAMORI_CODER_API_ENDPOINT, dataType, bodyData, classCode, false);
+      const res = await fetchData(MIMAMORI_CODER_API_ENDPOINT, dataType, bodyData, classCode, false);
     } catch (e: any) {
       vscode.window.showInformationMessage(e.message);
     }
@@ -150,6 +150,7 @@ export const activate = async(context: vscode.ExtensionContext) => {
     classCode = context.workspaceState.get('classCode');
     vscode.window.showInformationMessage(`studentID: [${studentId}], classCode: [${classCode}]`);
 	});
+
 
 
 	context.subscriptions.push(disposableChangeId);
