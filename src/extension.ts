@@ -74,9 +74,10 @@ export const activate = async(context: vscode.ExtensionContext) => {
     const savedDate: string = new Date().toLocaleString(); 
     const filePath = vscode.window.activeTextEditor === undefined ? '' : vscode.window.activeTextEditor.document.uri.fsPath;
     let bodyData = {};
-    const dataType = document.languageId;
+    let dataType = '';
     if (filePath.indexOf(wsName) === -1) return;
-    if (document.languageId === 'javascript') {
+    if (document.languageId === 'javascript' || document.languageId === 'html' || document.languageId === 'css') {
+      dataType = 'javascript';
       studentId = context.workspaceState.get('studentId');
       const curretDir = path.join(filePath, '..');
       const files = await vscode.workspace.fs.readDirectory(vscode.Uri.file(curretDir));
@@ -106,6 +107,7 @@ export const activate = async(context: vscode.ExtensionContext) => {
         }
       };
     } else if(document.languageId === 'python') {
+      dataType = 'python';
       const pythonSource: string = document.getText();
       const filename = path.basename(filePath);
       bodyData = {
