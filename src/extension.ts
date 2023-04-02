@@ -96,11 +96,13 @@ export const activate = async(context: vscode.ExtensionContext) => {
       const targetUri = vscode.Uri.file(targetPath);
       const readData = await vscode.workspace.fs.readFile(targetUri);
       const fileContent = Buffer.from(readData).toString('utf8');
-      const source = {
-        'fileExtension': fileExtensionName,
-        'filename': filename,
-        'content': fileContent,
-      };
+      const source = [
+        {
+          'fileExtension': fileExtensionName,
+          'filename': filename,
+          'content': fileContent,
+        }
+      ];
 
       bodyData = {
         'document': {
