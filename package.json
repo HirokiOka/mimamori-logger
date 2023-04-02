@@ -4,7 +4,7 @@
   "publisher": "HirokiOka",
   "description": "A logger extension for programming classes.",
   "repository": "https://github.com/HirokiOka/mimamori-logger",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "engines": {
     "vscode": "^1.75.0"
   },

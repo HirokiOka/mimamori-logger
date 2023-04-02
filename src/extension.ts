@@ -8,8 +8,6 @@ const MONGO_API_KEY: string = process.env.MONGO_API_KEY || '';
 const MONGO_DB_NAME: string = process.env.DBNAME || '';
 const MONGO_DATA_SRC: string = process.env.DATA_SRC || '';
 const MONGO_API_ENDPOINT: string = process.env.MONGO_API_ENDPOINT || '';
-
-//const CLASS_CODE: string = process.env.CLASS_CODE || '';
 const MIMAMORI_CODER_API_ENDPOINT: string = process.env.MIMAMORI_CODER_API_ENDPOINT || '';
 
 
@@ -76,36 +74,43 @@ export const activate = async(context: vscode.ExtensionContext) => {
     let bodyData = {};
     let dataType = '';
     if (filePath.indexOf(wsName) === -1) return;
+
     if (document.languageId === 'javascript' || document.languageId === 'html' || document.languageId === 'css') {
       dataType = 'javascript';
+      let fileExtensionExp: RegExp = /.js/;
+      if (document.languageId === 'javascript') {
+        fileExtensionExp = /.js/;
+      }else if (document.languageId === 'html') {
+        fileExtensionExp = /.html/;
+      }else if (document.languageId === 'css') {
+        fileExtensionExp = /.css/;
+      }
       studentId = context.workspaceState.get('studentId');
       const curretDir = path.join(filePath, '..');
       const files = await vscode.workspace.fs.readDirectory(vscode.Uri.file(curretDir));
-      const targetFiles = files.filter(file => file[0].match(/.js|.html|.css/));
+      const targetFiles = files.filter(f => f[0].match(fileExtensionExp));
 
-      let sources = [];
-      for (const file of targetFiles) {
-        const filename = file[0];
-        const fileExtension = filename.split('.').pop();
-        const targetPath = path.join(curretDir, filename);
-        const targetUri = vscode.Uri.file(targetPath);
-        const readData = await vscode.workspace.fs.readFile(targetUri);
-        const fileContent = Buffer.from(readData).toString('utf8');
-        sources.push({
-          'fileExtension': fileExtension,
-          'filename': filename,
-          'content': fileContent,
-        });
-      }
+      const filename = targetFiles[0][0];
+      const fileExtensionName = fileExtensionExp.toString().split('/')[1];
+      const targetPath = path.join(curretDir, filename);
+      const targetUri = vscode.Uri.file(targetPath);
+      const readData = await vscode.workspace.fs.readFile(targetUri);
+      const fileContent = Buffer.from(readData).toString('utf8');
+      const source = {
+        'fileExtension': fileExtensionName,
+        'filename': filename,
+        'content': fileContent,
+      };
 
       bodyData = {
         'document': {
           'studentId': studentId,
           'workspace': wsName,
           'savedAt': savedDate,
-          'sources': sources
+          'sources': source
         }
       };
+
     } else if(document.languageId === 'python') {
       dataType = 'python';
       const pythonSource: string = document.getText();
@@ -152,7 +157,6 @@ export const activate = async(context: vscode.ExtensionContext) => {
     classCode = context.workspaceState.get('classCode');
     vscode.window.showInformationMessage(`studentID: [${studentId}], classCode: [${classCode}]`);
 	});
-
 
 
 	context.subscriptions.push(disposableChangeId);
