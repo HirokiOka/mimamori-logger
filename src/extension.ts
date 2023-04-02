@@ -76,6 +76,7 @@ export const activate = async(context: vscode.ExtensionContext) => {
     if (filePath.indexOf(wsName) === -1) return;
 
     if (document.languageId === 'javascript' || document.languageId === 'html' || document.languageId === 'css') {
+      //ToDo: Refactoring
       dataType = 'javascript';
       let fileExtensionExp: RegExp = /.js/;
       if (document.languageId === 'javascript') {
@@ -86,20 +87,24 @@ export const activate = async(context: vscode.ExtensionContext) => {
         fileExtensionExp = /.css/;
       }
       studentId = context.workspaceState.get('studentId');
+      const filePath = document.fileName;
+      const splittedFilePath = filePath.split('/');
+      const fileName = splittedFilePath[splittedFilePath.length - 1];
       const curretDir = path.join(filePath, '..');
-      const files = await vscode.workspace.fs.readDirectory(vscode.Uri.file(curretDir));
-      const targetFiles = files.filter(f => f[0].match(fileExtensionExp));
+      //const files = await vscode.workspace.fs.readDirectory(vscode.Uri.file(curretDir));
+      //const targetFiles = files.filter(f => f[0].match(fileExtensionExp));
+      //const targetFiles = files.filter(f => f[0] === fileName);
 
-      const filename = targetFiles[0][0];
+      //const filename = targetFiles[0][0];
       const fileExtensionName = fileExtensionExp.toString().split('/')[1];
-      const targetPath = path.join(curretDir, filename);
+      const targetPath = path.join(curretDir, fileName);
       const targetUri = vscode.Uri.file(targetPath);
       const readData = await vscode.workspace.fs.readFile(targetUri);
       const fileContent = Buffer.from(readData).toString('utf8');
       const source = [
         {
           'fileExtension': fileExtensionName,
-          'filename': filename,
+          'filename': fileName,
           'content': fileContent,
         }
       ];
