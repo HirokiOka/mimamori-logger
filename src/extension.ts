@@ -78,25 +78,17 @@ export const activate = async(context: vscode.ExtensionContext) => {
     if (document.languageId === 'javascript' || document.languageId === 'html' || document.languageId === 'css') {
       //ToDo: Refactoring
       dataType = 'javascript';
-      let fileExtensionExp: RegExp = /.js/;
-      if (document.languageId === 'javascript') {
-        fileExtensionExp = /.js/;
-      }else if (document.languageId === 'html') {
-        fileExtensionExp = /.html/;
+      let fileExtensionName = 'js';
+      if (document.languageId === 'html') {
+        fileExtensionName = 'html';
       }else if (document.languageId === 'css') {
-        fileExtensionExp = /.css/;
+        fileExtensionName = 'css';
       }
+
       studentId = context.workspaceState.get('studentId');
       const filePath = document.fileName;
-      const splittedFilePath = filePath.split('/');
-      const fileName = splittedFilePath[splittedFilePath.length - 1];
+      const fileName = path.basename(filePath);
       const curretDir = path.join(filePath, '..');
-      //const files = await vscode.workspace.fs.readDirectory(vscode.Uri.file(curretDir));
-      //const targetFiles = files.filter(f => f[0].match(fileExtensionExp));
-      //const targetFiles = files.filter(f => f[0] === fileName);
-
-      //const filename = targetFiles[0][0];
-      const fileExtensionName = fileExtensionExp.toString().split('/')[1];
       const targetPath = path.join(curretDir, fileName);
       const targetUri = vscode.Uri.file(targetPath);
       const readData = await vscode.workspace.fs.readFile(targetUri);
