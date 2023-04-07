@@ -51,7 +51,10 @@ export const activate = async(context: vscode.ExtensionContext) => {
 
 
   if (studentId === undefined) {
-    studentId = await vscode.window.showInputBox();
+    studentId = await vscode.window.showInputBox({
+      placeHolder: 'Student ID',
+      prompt: 'Insert your student ID',
+    });
     context.workspaceState.update('studentId', studentId);
   }
 
@@ -142,7 +145,10 @@ export const activate = async(context: vscode.ExtensionContext) => {
 
   //Command for changing student ID
 	const disposableChangeId = vscode.commands.registerCommand('mimamori-logger.changeId', async () => {
-    const newId: any = await vscode.window.showInputBox();
+    const newId: any = await vscode.window.showInputBox({
+      placeHolder: 'Student ID',
+      prompt: 'Insert your student ID',
+    });
     context.workspaceState.update('studentId', newId);
     studentId = context.workspaceState.get('studentId');
     classCode = context.workspaceState.get('classCode');
@@ -150,7 +156,10 @@ export const activate = async(context: vscode.ExtensionContext) => {
 	});
 
 	const disposableChangeClassCode = vscode.commands.registerCommand('mimamori-logger.changeClassCode', async () => {
-    const newClassCode: any = await vscode.window.showInputBox();
+    const newClassCode: any = await vscode.window.showInputBox({
+      placeHolder: 'Class Code',
+      prompt: 'Insert the Class Code',
+    });
     context.workspaceState.update('classCode', newClassCode);
     studentId = context.workspaceState.get('studentId');
     classCode = context.workspaceState.get('classCode');
