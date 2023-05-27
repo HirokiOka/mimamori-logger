@@ -136,11 +136,13 @@ export const activate = async(context: vscode.ExtensionContext) => {
     }
 
     //Post data to Mimamori
+    /*
     try {
       const res = await fetchData(MIMAMORI_CODER_API_ENDPOINT, dataType, bodyData, classCode, false);
     } catch (e: any) {
       vscode.window.showInformationMessage(e.message);
     }
+    */
   });
 
   //Command for changing student ID
